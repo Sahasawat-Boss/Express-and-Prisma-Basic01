@@ -14,9 +14,19 @@ datasource db {
 }
 
 model Customer {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
   name   String
   email  String
   phone  String
-  credit Int? //? ค่าว่าง
+  credit Int? //? = allow null
+  Order  Order[]
 }
+
+model Order {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId // @id = primary key for the Order table
+  customerId String   @db.ObjectId //define a relation with the Customer model.
+  customer   Customer @relation(fields: [customerId], references: [id])
+  amount     Int // not allow null
+}
+  //  fields: [customerId] → The customerId field in Order links to…
+  // references: [id] → The id field in the Customer model.

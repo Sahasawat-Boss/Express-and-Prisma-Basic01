@@ -309,6 +309,15 @@ app.get('/customer/avgCredit', async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+// Count Customer
+app.get('/customer/countCustomer', async (req, res) => {
+    try {
+        const count = await prisma.customer.count();
+        res.json({ CustomerNo: count });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
 
 
 //This tells Express to start a web server on the given port
