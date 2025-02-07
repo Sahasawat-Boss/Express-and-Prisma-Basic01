@@ -147,10 +147,178 @@ app.get('/customer/contains', async (req, res) => {
     }
 });
 
+//Sort (By Name ASC)
+app.get('/customer/sortByName', async (req, res) => {
+    try {
+        const keyword = req.body.keyword;
+        const customer = await prisma.customer.findMany({ //ข้อมูลทั้งหมด
+            orderBy:
+            {
+                name: 'asc'
+            }
+        });
+        res.json(customer);
+        console.log(`Server Response: Sort Data in DB Successfully`);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Sort (By Name DESC)
+app.get('/customer/sortByNameDesc', async (req, res) => {
+    try {
+        const customer = await prisma.customer.findMany({
+            orderBy: {
+                name: 'desc' // Change 'asc' to 'desc' for descending order
+            }
+        });
+        res.json(customer);
+        console.log(`Server Response: Sort Data in DB Successfully`);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+// Sort Apply ต่อได้
+
+// Sort 2 เงื่อนไข Where And
+app.get('/customer/whereAnd', async (req, res) => {
+    try {
+        const customers = await prisma.customer.findMany({
+            where: {
+                AND: [
+                    {
+                        name: {
+                            contains: 'a'
+                        }
+                    },
+                    {
+                        credit: {
+                            gte: 1000,
+                        }
+                    }
+                ]
+            }
+        });
+        res.json(customers);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Operator	Meaning	Example (price)
+// gte	  |  Greater than or equal to   |	{ gte: 100 } (≥ 100)
+// gt	  |  Greater than	            | { gt: 100 } (> 100)
+// lte	  |  Less than or equal to	    | { lte: 100 } (≤ 100)
+// lt	  |  Less than	                | { lt: 100 } (< 100)
+// equals |  Equal to	                | { equals: 100 } (== 100)
+
+// Sort 2 เงื่อนไข List Between
+app.get('/customer/ListBetweenCredit', async (req, res) => {
+    try {
+        const customers = await prisma.customer.findMany({
+            where: {
+                AND: [
+                    {
+                        credit: {
+                            gt: 900,
+                            lte: 3000,
+                        }
+                    }
+                ]
+            }
+        });
+        res.json(customers);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Sort 2 เงื่อนไข List Between
+app.get('/customer/ListBetweenCredit', async (req, res) => {
+    try {
+        const customers = await prisma.customer.findMany({
+            where: {
+                AND: [
+                    {
+                        credit: {
+                            gt: 900,
+                            lte: 3000,
+                        }
+                    }
+                ]
+            }
+        });
+        res.json(customers);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// SUM Credit
+app.get('/customer/sumCredit', async (req, res) => {
+    try {
+        const sumCredit = await prisma.customer.aggregate({ //
+            _sum: {
+                credit: true
+            }
+        });
+        res.json({ sumCredit: sumCredit._sum.credit });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Find Max Credit
+app.get('/customer/maxCredit', async (req, res) => {
+    try {
+        const maxCredit = await prisma.customer.aggregate({
+            _max: {
+                credit: true
+            }
+        });
+        res.json({ maxCredit: maxCredit._max.credit });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Find Min Credit
+app.get('/customer/minCredit', async (req, res) => {
+    try {
+        const minCredit = await prisma.customer.aggregate({
+            _min: {
+                credit: true
+            }
+        });
+        res.json({ maxCredit: minCredit._min.credit });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// Find Average Credit
+app.get('/customer/avgCredit', async (req, res) => {
+    try {
+        const avgCredit = await prisma.customer.aggregate({
+            _avg: {
+                credit: true
+            }
+        });
+        res.json({ maxCredit: avgCredit._avg.credit });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+
+//This tells Express to start a web server on the given port
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
     console.log(`http://localhost:3000`);
 });
+
+
+
 
 //http://localhost:3000/
 //http://localhost:3000/check-db-connection
