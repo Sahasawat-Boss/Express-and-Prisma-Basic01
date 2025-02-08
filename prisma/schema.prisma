@@ -19,14 +19,29 @@ model Customer {
   email  String
   phone  String
   credit Int? //? = allow null
-  Order  Order[]
+  Order  Order[] // One-to-Many: A customer can have multiple order
 }
 
+//Relation One to Many
 model Order {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId // @id = primary key for the Order table
   customerId String   @db.ObjectId //define a relation with the Customer model.
   customer   Customer @relation(fields: [customerId], references: [id])
   amount     Int // not allow null
+  product    Product? @relation(fields: [productId], references: [id])
+  productId  String?  @db.ObjectId
 }
-  //  fields: [customerId] → The customerId field in Order links to…
-  // references: [id] → The id field in the Customer model.
+
+//  fields: [customerId] → The customerId field in Order links to…
+// references: [id] → The id field in the Customer model.
+
+//Relation Many to One
+model Product {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  price  Int
+  Orders Order[] // One-to-Many: A Product can be referenced in multiple Orders
+}
+
+//Terminal: npx prisma generate 
+// Terminal:npx prisma db push 

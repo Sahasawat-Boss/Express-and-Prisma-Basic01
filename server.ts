@@ -319,15 +319,92 @@ app.get('/customer/countCustomer', async (req, res) => {
     }
 });
 
+//*/====================================================================================
+// Create Order
+app.post('/order/create', async (req, res) => {
+    try {
+        const customerId = req.body.customerId;
+        const amount = req.body.amount;
+        const order = await prisma.order.create({
+            data: {
+                customerId: customerId,
+                amount: amount
+            }
+        });
+        res.json(order);
+        console.log("Create Order Successful")
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// GET Order by ID
+app.get('/customer/listOrder/:customerId', async (req, res) => {
+    try {
+        const customerId = req.params.customerId;
+        const order = await prisma.order.findMany({
+            where: {
+                customerId: customerId,
+            }
+        });
+        res.json(order);
+        console.log("Get Order Successful")
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+// GET All Cutomer and Order
+app.get('/customer/listAllOrder', async (req, res) => {
+    try {
+        const orders = await prisma.customer.findMany({
+            include: {
+                Order: true
+            }
+        });
+        res.json(orders);
+        console.log("Get All Order Successful")
+    } catch (error) {
+        console.log("❌ Error fetching orders:", error);
+        return res.status(500).json({ error: error.message });
+
+    }
+});
+
+// GET All Cutomer, Order, Product
+app.get('/customer/listOrderAndProduct/:customerId', async (req, res) => {
+    try {
+        const customerId = req.params.customerId;
+        const customers = await prisma.customer.findMany({
+            where: {
+                id: customerId
+            },
+            include: {
+                Order: {
+                    include: {
+                        product: true
+                    }
+                }
+            }
+        });
+        res.json(customers);
+    } catch (error) {
+        console.log("❌ Error fetching orders:", error);
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+  //*/====================================================================================
+
+
+
+
+
 
 //This tells Express to start a web server on the given port
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
     console.log(`http://localhost:3000`);
 });
-
-
-
-
 //http://localhost:3000/
 //http://localhost:3000/check-db-connection
